@@ -115,7 +115,7 @@ interface Todo {
   
   document.addEventListener("DOMContentLoaded", () => {
     loadTodos(); // Loads the saved todos on document load
-    fetchTodos(); // Fetches the todos from the API on document load
+    // fetchTodos(); // Fetches the todos from the API on document load (avstängd för jag bara vill att den ska laddas om det ej finns några i local storage)
   });
   
   const deleteTodo = (id: number): void => {

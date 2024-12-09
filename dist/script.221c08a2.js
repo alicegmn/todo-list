@@ -274,7 +274,7 @@ addTodoButton.addEventListener("click", function () {
 });
 document.addEventListener("DOMContentLoaded", function () {
   loadTodos(); // Loads the saved todos on document load
-  fetchTodos(); // Fetches the todos from the API on document load
+  // fetchTodos(); // Fetches the todos from the API on document load (avstängd för jag bara vill att den ska laddas om det ej finns några i local storage)
 });
 var deleteTodo = function deleteTodo(id) {
   todos = todos.filter(function (todo) {
@@ -307,7 +307,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60005" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55527" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
