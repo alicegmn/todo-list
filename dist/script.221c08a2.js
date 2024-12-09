@@ -149,11 +149,11 @@ var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, gene
     step((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 };
-// Retrieves HTML elements for todo-input, add-todo-button, and todo-list
+// gets HTML elements for the input of new todos
 var todoInput = document.getElementById("todo-input");
 var addTodoButton = document.getElementById("add-todo");
 var todoList = document.getElementById("todo-list");
-// Initial array to store todos
+// array to store todos
 var todos = [];
 // Asynchronous function to fetch todos from API
 var fetchTodos = function fetchTodos() {
@@ -189,52 +189,46 @@ var fetchTodos = function fetchTodos() {
 };
 // Function to render todos in the user interface
 var renderTodos = function renderTodos() {
-  // Clears the existing list in todoList
-  todoList.innerHTML = "";
-  // Iterates over todos and creates a new list element for each todo
+  todoList.innerHTML = ""; // Rensar den befintliga listan i todoList
   todos.forEach(function (todo) {
-    var li = document.createElement("li"); // Creates a new list item element for each todo
-    // Adds the todo text to the list element
-    li.textContent = todo.title; // Sets the text content of the list item to the todo title
-    // Creates a checkbox to mark as completed
-    var checkbox = document.createElement("input"); // Creates a new input element for the checkbox
-    checkbox.type = "checkbox"; // Sets the input type to checkbox
-    // Sets the checkbox status based on todo.completed
-    checkbox.checked = todo.completed; // Sets the checkbox to checked if the todo is completed
-    // Adds an event listener to change todo.completed on checkbox change
+    var li = document.createElement("li"); // Skapar ett nytt listobjekt för varje todo
+    li.textContent = todo.title; // Sätter textinnehållet till todo-titeln
+    var checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = todo.completed;
     checkbox.addEventListener("change", function () {
       return toggleTodoCompletion(todo.id);
-    }); // Adds an event listener to toggle the todo completion on checkbox change
-    // Adds the checkbox to the list element
-    li.appendChild(checkbox); // Adds the checkbox to the list item
-    // Creates a button to delete the todo
-    var deleteButton = document.createElement("button"); // Creates a new button element for deleting the todo
-    deleteButton.textContent = "Delete"; // Sets the text content of the button to "Delete"
-    // Adds an event listener to delete the todo on button click
+    });
+    li.appendChild(checkbox);
+    var deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
     deleteButton.addEventListener("click", function () {
       return deleteTodo(todo.id);
-    }); // Adds an event listener to delete the todo on button click
-    li.appendChild(deleteButton); // Adds the delete button to the list item
-    todoList.appendChild(li); // Adds the list item to the todoList element
+    });
+    li.appendChild(deleteButton);
+    todoList.appendChild(li);
   });
+  console.log("Renderade todos:", todos); // Loggar de renderade todos
 };
 // Add a new todo
 var addTodo = function addTodo() {
-  var title = todoInput.value.trim(); // Retrieves the trimmed value from the todoInput element
+  var title = todoInput.value.trim();
   if (!title) {
-    alert("Todo cannot be empty!"); // Alerts the user if the todo title is empty
+    alert("Write something");
     return;
   }
   var newTodo = {
     id: Date.now(),
-    // Generates a unique id for the new todo
+    // Genererar ett unikt (datum)id för den nya todo
     title: title,
-    // Sets the title of the new todo
-    completed: false // Sets the completed status of the new todo to false
+    // Title = texten 
+    completed: false // Ej klar som standard
   };
-  todos.push(newTodo); // Adds the new todo to the todos array
-  renderTodos(); // Calls the function to render the updated todos
-  todoInput.value = ""; // Clears the input field after adding the todo
+  todos.push(newTodo); // Lägger till den nya todo i todos-arrayen
+  console.log("Added new todo:", newTodo); // Loggar den nya todo
+  renderTodos(); // Anropar funktionen för att rendera de uppdaterade todos
+  saveTodos(); // Sparar todos efter att en ny har lagts till
+  todoInput.value = ""; // Rensar inmatningsfältet 
 };
 todoInput.addEventListener("keydown", function (event) {
   if (event.key === "Enter") {
@@ -247,26 +241,36 @@ var toggleTodoCompletion = function toggleTodoCompletion(id) {
     return todo.id === id ? Object.assign(Object.assign({}, todo), {
       completed: !todo.completed
     }) : todo;
-  } // Toggles the completed status of the todo with the specified id
+  } //Toggle för completed
   );
-  renderTodos(); // Calls the function to render the updated todos
+  renderTodos(); // Renderar den uppdaterade todo-listan
 };
 // Event listeners
 addTodoButton.addEventListener("click", addTodo); // Adds an event listener to the addTodoButton to call addTodo on click
-document.addEventListener("DOMContentLoaded", fetchTodos); // Adds an event listener to fetch todos on document load
+document.addEventListener("DOMContentLoaded", function () {
+  loadTodos(); // Försök att ladda todos från localStorage
+  if (todos.length === 0) {
+    // Om inga todos finns i localStorage
+    fetchTodos(); // Hämta från API:et
+  }
+}); // Adds an event listener to fetch todos on document load
+// Sparar todos-arrayen till localStorage och consol.logar den
 var saveTodos = function saveTodos() {
-  localStorage.setItem("todos", JSON.stringify(todos)); // Saves the todos array to localStorage
+  localStorage.setItem("todos", JSON.stringify(todos));
+  console.log("Todos in localStorage:", todos);
 };
 var loadTodos = function loadTodos() {
-  var saved = localStorage.getItem("todos"); // Retrieves the saved todos from localStorage
+  var saved = localStorage.getItem("todos"); // Hämtar sparade todos från localStorage
+  console.log("Laddar todos från localStorage:", saved); // Loggar vad som finns i localStorage
   if (saved) {
-    todos = JSON.parse(saved); // Parses the saved todos back into the todos array
-    renderTodos(); // Calls the function to render the loaded todos
+    todos = JSON.parse(saved); // Parsar de sparade todos tillbaka till todos-arrayen
+    console.log("Todos efter parsing:", todos); // Loggar de parsade todos
+    renderTodos(); // Anropar funktionen för att rendera de laddade todos
   }
 };
 addTodoButton.addEventListener("click", function () {
-  addTodo(); // Calls the addTodo function on addTodoButton click
-  saveTodos(); // Saves the todos after adding a new one
+  addTodo();
+  saveTodos();
 });
 document.addEventListener("DOMContentLoaded", function () {
   loadTodos(); // Loads the saved todos on document load
@@ -275,8 +279,8 @@ document.addEventListener("DOMContentLoaded", function () {
 var deleteTodo = function deleteTodo(id) {
   todos = todos.filter(function (todo) {
     return todo.id !== id;
-  }); // Filters out the todo with the specified id from the todos array
-  renderTodos(); // Calls the function to render the updated todos
+  });
+  renderTodos();
 };
 },{}],"../../../../.npm-global/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
